@@ -8,14 +8,14 @@ A sophisticated command-line ping monitoring tool that provides real-time visual
 
 ## ✨ Features
 
-- 🎨 **Visual Terminal Interface**: Color-coded blocks representing ping status over time
+- 🎨 **Visual Terminal Interface**: Size-based symbols that scale with ping latency
 - ⏱️ **Real-time Monitoring**: Continuous ping monitoring with live terminal updates
 - 📊 **Comprehensive Statistics**: Track packet loss, average latency, min/max values
-- 🎵 **Audio Alerts**: Sound notifications for ping failures (planned)
-- 🕐 **Time-Based Views**: Multiple time scales (5min, 10min, 15min, 1hr, etc.)
-- 💾 **Historical Data**: Persist and display ping history across sessions (planned)
+- 🔊 **Audio Alerts**: Sound notifications for failures and recovery events
+- 📈 **Intuitive Visualization**: Smaller dots for better performance, larger squares for poor performance
+- 🎯 **Responsive Design**: Adapts to terminal size for optimal space utilization
 - 🖥️ **Cross-Platform**: Support for macOS, Linux, and Windows
-- ⚙️ **Configurable**: Customizable intervals, timeouts, and display options
+- ⚙️ **Configurable**: Customizable intervals, timeouts, sound alerts, and display modes
 
 ## 🚀 Quick Start
 
@@ -66,9 +66,12 @@ Options:
   -V, --version          output the version number
   -v, --view <time>      Time view (5m|10m|15m|1h|6h|1d) (default: "15m")
   -i, --interval <ms>    Ping interval in milliseconds (default: "1000")
-  -t, --timeout <ms>     Ping timeout in milliseconds (default: "5000")
-  -s, --sound            Enable failure sound alerts (default: false)
+  -t, --timeout <ms>     Ping timeout in milliseconds (default: "1000")
+  -s, --sound            Enable failure sound alerts (default: true)
   -f, --frequency-sound  Enable frequency-based sound feedback (default: false)
+  --no-sound             Disable sound alerts
+  --visual               Use advanced visual interface (default: true)
+  --simple               Use simple text interface (default: false)
   -c, --count <number>   Stop after N pings (0 = infinite) (default: "0")
   -o, --output <file>    Save results to file
   -q, --quiet            Minimize output, show only failures (default: false)
@@ -99,36 +102,34 @@ npm run dev remote-server.com --timeout 10000
 
 ## 🎨 Visual Output
 
-PingLink provides color-coded real-time feedback:
+PingLink provides an intuitive size-based visualization where symbol size correlates with latency:
 
 ```
-🔗 PingLink v1.0.0 - Starting ping monitor for 8.8.8.8
-⚙️  Interval: 1000ms | Timeout: 5000ms | View: 15m
-───────────────────────────────────────────────────────────────
-🚀 Starting continuous ping to 8.8.8.8...
+🔗 PingLink v1.0.0 - Visual Ping Monitor (Running continuously)
+Target: 1.1.1.1 | Interval: 1000ms | Timeout: 1000ms | Press Ctrl+C to quit
 
-[11:49:18] ● 8.8.8.8 - 30.3ms | Avg: 30.3ms | Loss: 0.0%
-[11:49:19] ● 8.8.8.8 - 24.8ms | Avg: 27.6ms | Loss: 0.0%
-[11:49:20] ○ 8.8.8.8 - TIMEOUT | Avg: 27.6ms | Loss: 33.3%
+· 0-50 ∙ 50-100 ▪ 100-200 ■ 200-500 ■ >500 □ FAIL (ms)
 
-📊 Final Statistics:
-   Total pings: 3
-   Successful: 2 (66.7%)
-   Failed: 1 (33.3%)
-   Average latency: 27.6ms
-   Min/Max latency: 24.8ms / 30.3ms
+······∙∙▪▪■■□□······∙∙▪
 
-👋 Goodbye!
+[14:32:15] 1.1.1.1: 23.4ms
+Total: 156 | Success: 87.2% | Loss: 12.8% | Avg: 45.7ms | Min: 18.2ms | Max: 234.1ms
 ```
 
-### Color Scheme
+### Visual Legend
 
-- 🟢 **Green (●)**: Excellent latency (< 50ms)
-- 🟡 **Yellow (●)**: Good latency (50-100ms)  
-- 🟠 **Orange (●)**: Fair latency (100-200ms)
-- 🔴 **Red (●)**: Poor latency (200-500ms)
-- 🟣 **Magenta (●)**: Very poor latency (> 500ms)
-- ⚪ **White (○)**: Failed ping / Timeout
+- **`·`** **Green**: Excellent latency (0-50ms) - Middle Dot
+- **`∙`** **Yellow**: Good latency (50-100ms) - Bullet Operator
+- **`▪`** **Orange**: Fair latency (100-200ms) - Black Small Square
+- **`■`** **Red**: Poor latency (200-500ms) - Black Square
+- **`■`** **Purple**: Very poor latency (>500ms) - Black Square
+- **`□`** **Gray**: Failed ping/Timeout - White Square
+
+### Audio Feedback
+
+- **Single beep**: Ping failure detected
+- **Double beep**: Network recovery (ping success after failures)
+- **No sound**: Successful pings (unless frequency sound is enabled)
 
 ## 📝 Available Scripts
 
@@ -192,11 +193,15 @@ pinglink/
 ├── src/
 │   ├── core/
 │   │   ├── ping-engine.ts          # Core ping functionality
-│   │   └── data-manager.ts         # History storage and retrieval
-│   ├── ui/                         # Terminal UI components (planned)
+│   │   ├── data-manager.ts         # History storage and retrieval
+│   │   └── sound-engine.ts         # Audio alerts and recovery sounds
+│   ├── ui/
+│   │   ├── simple-graph-renderer.ts # Size-based visual ping display
+│   │   ├── terminal-renderer.ts     # Advanced terminal UI
+│   │   └── graph-visualizer.ts      # Graph visualization components
 │   ├── utils/
 │   │   ├── time-utils.ts          # Time calculations
-│   │   └── color-schemes.ts       # Color palettes
+│   │   └── color-schemes.ts       # Color palettes and visual themes
 │   ├── types/
 │   │   └── index.ts               # TypeScript definitions
 │   ├── cli.ts                     # CLI entry point
@@ -224,11 +229,14 @@ pinglink/
 {
   "host": "1.1.1.1",
   "interval": 1000,
-  "timeout": 5000,
+  "timeout": 1000,
   "view": "15m",
-  "sound": false,
+  "sound": true,
+  "visual": true,
+  "simple": false,
   "quiet": false,
-  "detailed": false
+  "detailed": false,
+  "frequencySound": false
 }
 ```
 
@@ -252,28 +260,30 @@ PingLink tracks comprehensive network statistics:
 
 ## 🚧 Roadmap
 
-### Phase 2 - Visual Interface (In Progress)
-- [ ] Advanced terminal UI with blessed
-- [ ] Time-based block visualization
-- [ ] Interactive dashboard
-- [ ] Responsive layout
+### Phase 2 - Visual Interface ✅ Complete
+- [x] Size-based symbol visualization
+- [x] Terminal-optimized display
+- [x] Responsive layout with terminal adaptation
+- [x] Intuitive color-coded legend
 
-### Phase 3 - Time Management (Planned)
+### Phase 3 - Audio System ✅ Complete
+- [x] Sound alerts for failures
+- [x] Recovery notification sounds  
+- [x] Cross-platform audio support
+- [x] Configurable sound settings
+
+### Phase 4 - Time Management (Planned)
 - [ ] Historical data persistence
 - [ ] Multiple time view switching
 - [ ] Data aggregation system
 - [ ] Export functionality
-
-### Phase 4 - Audio System (Planned)  
-- [ ] Sound alerts for failures
-- [ ] Frequency-based audio feedback
-- [ ] Configurable audio settings
 
 ### Phase 5 - Advanced Features (Planned)
 - [ ] Multiple target monitoring
 - [ ] Configuration file system
 - [ ] Network topology discovery
 - [ ] Performance optimizations
+- [ ] Multi-row visualization for large terminals
 
 ## 🤝 Contributing
 
