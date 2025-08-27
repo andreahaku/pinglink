@@ -91,33 +91,58 @@ export class SimpleGraphRenderer {
     
     const terminalWidth = process.stdout.columns || 80;
     const terminalHeight = process.stdout.rows || 24;
-    const availableRows = Math.max(1, terminalHeight - 8); // Reserve space for header and stats
+    const availableRows = Math.max(1, terminalHeight - 7); // Reserve space for header and stats (removed gap line)
     
     // Each block is now 1 character wide
-    const blockWidth = 1;
     const blocksPerRow = terminalWidth;
-    
-    let output = '';
-    let currentRow = 0;
-    
-    // Start from the most recent pings that fit in the available space
     const maxBlocksToShow = availableRows * blocksPerRow;
-    const startIndex = Math.max(0, this.pingHistory.length - maxBlocksToShow);
     
-    for (let i = startIndex; i < this.pingHistory.length; i++) {
-      const blockPosition = i - startIndex;
+    // Create a 2D array to represent the display grid
+    const displayGrid: string[][] = [];
+    
+    // Initialize empty grid
+    for (let row = 0; row < availableRows; row++) {
+      displayGrid[row] = new Array(blocksPerRow).fill(' ');
+    }
+    
+    // Fill the grid with ping data, row by row
+    let currentRow = 0;
+    let currentCol = 0;
+    
+    for (let i = 0; i < this.pingHistory.length; i++) {
+      const ping = this.pingHistory[i];
+      const block = this.getPingBlock(ping);
       
-      output += this.getPingBlock(this.pingHistory[i]);
+      // Place the block in the current position
+      displayGrid[currentRow][currentCol] = block;
       
-      // Add newline when row is full
-      if ((blockPosition + 1) % blocksPerRow === 0) {
-        output += '\n';
+      // Move to next position
+      currentCol++;
+      
+      // If we've filled the current row, move to the next row
+      if (currentCol >= blocksPerRow) {
+        currentCol = 0;
         currentRow++;
         
-        // Stop if we've filled all available rows
+        // If we've exceeded available rows, scroll up by removing top row
         if (currentRow >= availableRows) {
-          break;
+          // Remove the top row and shift everything up
+          displayGrid.shift();
+          // Add a new empty row at the bottom
+          displayGrid.push(new Array(blocksPerRow).fill(' '));
+          // Stay on the last row
+          currentRow = availableRows - 1;
         }
+      }
+    }
+    
+    // Convert grid to output string
+    let output = '';
+    for (let row = 0; row < availableRows; row++) {
+      // Only show rows that have been used (not all spaces)
+      const rowContent = displayGrid[row].join('');
+      if (rowContent.trim().length > 0 || row <= currentRow) {
+        output += rowContent.trimEnd() + '\n';
       }
     }
     
@@ -153,7 +178,6 @@ export class SimpleGraphRenderer {
     const timestamp = formatTime(ping.timestamp);
     const { default: colors } = COLOR_SCHEMES;
     
-    console.log(); // Empty line
     
     if (ping.success) {
       const category = categorizeLatency(ping.latency);
