@@ -1,6 +1,9 @@
 import type { ColorScheme } from '../types/index.js';
 import { LatencyCategory } from '../types/index.js';
 
+// Re-export for convenience
+export { LatencyCategory };
+
 export const COLOR_SCHEMES = {
   default: {
     excellent: '\u001b[32m', // Green

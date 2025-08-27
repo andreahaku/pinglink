@@ -41,6 +41,8 @@ export interface PingConfig {
   frequencySound: boolean;
   quiet: boolean;
   detailed: boolean;
+  visual: boolean;
+  simple: boolean;
   output?: string;
 }
 

@@ -14,9 +14,12 @@ program
   .argument('[host]', 'Host to ping (IP address or hostname)', '1.1.1.1')
   .option('-v, --view <time>', 'Time view (5m|10m|15m|1h|6h|1d)', '15m')
   .option('-i, --interval <ms>', 'Ping interval in milliseconds', '1000')
-  .option('-t, --timeout <ms>', 'Ping timeout in milliseconds', '5000')
-  .option('-s, --sound', 'Enable failure sound alerts', false)
+  .option('-t, --timeout <ms>', 'Ping timeout in milliseconds', '1000')
+  .option('-s, --sound', 'Enable failure sound alerts', true)
   .option('-f, --frequency-sound', 'Enable frequency-based sound feedback', false)
+  .option('--no-sound', 'Disable sound alerts')
+  .option('--visual', 'Use advanced visual interface (default)', true)
+  .option('--simple', 'Use simple text interface', false)
   .option('-c, --count <number>', 'Stop after N pings (0 = infinite)', '0')
   .option('-o, --output <file>', 'Save results to file')
   .option('-q, --quiet', 'Minimize output, show only failures', false)
@@ -41,8 +44,8 @@ program
       process.exit(1);
     }
 
-    if (isNaN(timeout) || timeout < 1000) {
-      console.error('Timeout must be a number >= 1000ms');
+    if (isNaN(timeout) || timeout < 500) {
+      console.error('Timeout must be a number >= 500ms');
       process.exit(1);
     }
 
@@ -61,6 +64,8 @@ program
       frequencySound: options.frequencySound,
       quiet: options.quiet,
       detailed: options.detailed,
+      visual: !options.simple, // Visual is default unless --simple is specified
+      simple: options.simple,
       output: options.output
     };
 
