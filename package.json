@@ -1,0 +1,52 @@
+{
+  "name": "pinglink",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "bin": {
+    "pinglink": "./bin/pinglink"
+  },
+  "scripts": {
+    "build": "esbuild src/cli.ts --bundle --platform=node --format=esm --outfile=dist/cli.js --minify --external:child_process --external:events && esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --minify --external:child_process --external:events",
+    "dev": "node --loader ts-node/esm src/cli.ts",
+    "dev:watch": "esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js --watch",
+    "start": "npm run build && node ./bin/pinglink",
+    "ping": "node --loader ts-node/esm src/cli.ts",
+    "ping:google": "node --loader ts-node/esm src/cli.ts 8.8.8.8",
+    "ping:cloudflare": "node --loader ts-node/esm src/cli.ts 1.1.1.1",
+    "ping:demo": "node --loader ts-node/esm src/cli.ts 8.8.8.8 --count 10 --interval 500",
+    "ping:quiet": "node --loader ts-node/esm src/cli.ts --quiet",
+    "ping:detailed": "node --loader ts-node/esm src/cli.ts --detailed",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src/**/*.ts",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist/",
+    "prepare": "npm run build",
+    "install-global": "npm run build && npm link"
+  },
+  "keywords": [
+    "ping",
+    "network",
+    "monitoring",
+    "cli",
+    "terminal"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "Visual Ping Monitor CLI Tool with real-time terminal interface",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "esbuild": "^0.25.9",
+    "eslint": "^9.34.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "chalk": "^5.6.0",
+    "cli-cursor": "^5.0.0",
+    "commander": "^14.0.0"
+  }
+}
