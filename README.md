@@ -104,6 +104,16 @@ npm run dev remote-server.com --timeout 10000
 
 PingLink provides an intuitive size-based visualization where symbol size correlates with latency:
 
+![PingLink Visual Interface](pinglink.png)
+
+The interface shows:
+- **Multi-row display** that fills the entire terminal
+- **Size-based symbols** that scale with ping latency
+- **Color-coded legend** for easy interpretation
+- **Real-time statistics** including success rate, packet loss, and latency metrics
+- **Historical visualization** showing network performance over time
+
+### Text Example
 ```
 🔗 PingLink v1.0.0 - Visual Ping Monitor (Running continuously)
 Target: 1.1.1.1 | Interval: 1000ms | Timeout: 1000ms | Press Ctrl+C to quit
