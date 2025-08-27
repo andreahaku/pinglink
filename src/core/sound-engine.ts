@@ -45,11 +45,6 @@ export class SoundEngine {
 
     // Use immediate terminal bell for fastest response
     process.stdout.write('\u0007');
-    
-    // Also try system sound in background (non-blocking)
-    this.playSystemBeep().catch(() => {
-      // Ignore errors, terminal bell already played
-    });
   }
 
   public async playRecoveryAlert(): Promise<void> {
@@ -58,11 +53,6 @@ export class SoundEngine {
     // Play double terminal bell for recovery (different pattern)
     process.stdout.write('\u0007');
     setTimeout(() => process.stdout.write('\u0007'), 100);
-    
-    // Also try recovery system sound in background (non-blocking)
-    this.playRecoverySystemSound().catch(() => {
-      // Ignore errors, terminal bell already played
-    });
   }
 
   public async playLatencySound(result: PingResult): Promise<void> {

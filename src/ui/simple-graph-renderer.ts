@@ -4,7 +4,7 @@ import { formatTime } from '../utils/time-utils.js';
 
 export class SimpleGraphRenderer {
   private pingHistory: PingResult[] = [];
-  private maxHistorySize: number = 200;
+  private maxHistorySize: number;
   private host: string;
   private interval: number;
   private timeout: number;
@@ -16,6 +16,17 @@ export class SimpleGraphRenderer {
     this.host = host;
     this.interval = interval;
     this.timeout = timeout;
+    
+    // Calculate maximum history size based on terminal dimensions
+    // Use a generous buffer to ensure we have enough history for large terminals
+    const terminalHeight = process.stdout.rows || 24;
+    const terminalWidth = process.stdout.columns || 80;
+    const availableRows = Math.max(1, terminalHeight - 8);
+    const blockWidth = 1; // Each block is 1 character
+    const blocksPerRow = terminalWidth;
+    // Use 3x the display area to ensure smooth scrolling and enough history
+    this.maxHistorySize = Math.max(1000, availableRows * blocksPerRow * 3);
+    
     this.initializeDisplay();
   }
 
@@ -76,49 +87,65 @@ export class SimpleGraphRenderer {
   }
 
   private renderPingBlocks(): void {
+    if (this.pingHistory.length === 0) return;
+    
     const terminalWidth = process.stdout.columns || 80;
+    const terminalHeight = process.stdout.rows || 24;
+    const availableRows = Math.max(1, terminalHeight - 8); // Reserve space for header and stats
+    
+    // Each block is now 1 character wide
+    const blockWidth = 1;
     const blocksPerRow = terminalWidth;
     
     let output = '';
-    for (let i = 0; i < this.pingHistory.length; i++) {
+    let currentRow = 0;
+    
+    // Start from the most recent pings that fit in the available space
+    const maxBlocksToShow = availableRows * blocksPerRow;
+    const startIndex = Math.max(0, this.pingHistory.length - maxBlocksToShow);
+    
+    for (let i = startIndex; i < this.pingHistory.length; i++) {
+      const blockPosition = i - startIndex;
+      
       output += this.getPingBlock(this.pingHistory[i]);
       
       // Add newline when row is full
-      if ((i + 1) % blocksPerRow === 0) {
+      if ((blockPosition + 1) % blocksPerRow === 0) {
         output += '\n';
+        currentRow++;
+        
+        // Stop if we've filled all available rows
+        if (currentRow >= availableRows) {
+          break;
+        }
       }
     }
     
-    // Add final newline if needed
-    if (this.pingHistory.length % blocksPerRow !== 0) {
-      output += '\n';
-    }
-    
-    console.log(output.trim());
+    console.log(output);
   }
 
   private getPingBlock(ping: PingResult): string {
     const { default: colors } = COLOR_SCHEMES;
     
     if (!ping.success) {
-      return `${colors.failed}▓${RESET_COLOR}`;
+      return `${colors.failed}□${RESET_COLOR}`; // U+25A1 White Square for failures
     }
 
     const category = categorizeLatency(ping.latency);
     
     switch (category) {
-      case LatencyCategory.EXCELLENT:
-        return `${colors.excellent}█${RESET_COLOR}`;
-      case LatencyCategory.GOOD:
-        return `${colors.good}█${RESET_COLOR}`;
-      case LatencyCategory.FAIR:
-        return `${colors.fair}█${RESET_COLOR}`;
-      case LatencyCategory.POOR:
-        return `${colors.poor}█${RESET_COLOR}`;
-      case LatencyCategory.VERY_POOR:
-        return `${colors.verypoor}█${RESET_COLOR}`;
+      case LatencyCategory.EXCELLENT: // 0-50ms
+        return `${colors.excellent}·${RESET_COLOR}`; // U+00B7 Middle Dot (smallest)
+      case LatencyCategory.GOOD: // 50-100ms
+        return `${colors.good}∙${RESET_COLOR}`; // U+2219 Bullet Operator
+      case LatencyCategory.FAIR: // 100-200ms
+        return `${colors.fair}▪${RESET_COLOR}`; // U+25AA Black Small Square
+      case LatencyCategory.POOR: // 200-500ms
+        return `${colors.poor}■${RESET_COLOR}`; // U+25A0 Black Square
+      case LatencyCategory.VERY_POOR: // >500ms
+        return `${colors.verypoor}■${RESET_COLOR}`; // U+25A0 Black Square
       default:
-        return `${colors.failed}▓${RESET_COLOR}`;
+        return `${colors.failed}□${RESET_COLOR}`; // U+25A1 White Square for failures
     }
   }
 
