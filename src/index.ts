@@ -51,6 +51,7 @@ export async function startPingMonitor(config: PingConfig): Promise<void> {
     } else {
       console.log('\n\n📊 Final Statistics:');
       const stats = dataManager.calculateStats();
+      console.log(`   Runtime: ${stats.elapsedTime}`);
       console.log(`   Total pings: ${stats.totalPings}`);
       console.log(`   Successful: ${stats.successfulPings} (${(100 - stats.packetLoss).toFixed(1)}%)`);
       console.log(`   Failed: ${stats.failedPings} (${stats.packetLoss.toFixed(1)}%)`);
@@ -98,9 +99,9 @@ export async function startPingMonitor(config: PingConfig): Promise<void> {
         const stats = dataManager.calculateStats();
         
         if (result.success) {
-          console.log(`[${timestamp}] ${status} ${config.host} - ${latencyStr} | Avg: ${stats.averageLatency.toFixed(1)}ms | Loss: ${stats.packetLoss.toFixed(1)}%`);
+          console.log(`[${timestamp}] ${status} ${config.host} - ${latencyStr} | Runtime: ${stats.elapsedTime} | Avg: ${stats.averageLatency.toFixed(1)}ms | Loss: ${stats.packetLoss.toFixed(1)}%`);
         } else {
-          console.log(`[${timestamp}] ${status} ${config.host} - ${result.error || 'FAILED'} | Loss: ${stats.packetLoss.toFixed(1)}%`);
+          console.log(`[${timestamp}] ${status} ${config.host} - ${result.error || 'FAILED'} | Runtime: ${stats.elapsedTime} | Loss: ${stats.packetLoss.toFixed(1)}%`);
         }
       } else if (!result.success) {
         // Show only failures in quiet mode

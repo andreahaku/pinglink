@@ -4,6 +4,7 @@ import { TimeFrame } from '../types/index.js';
 export class DataManager {
   private results: PingResult[] = [];
   private maxResults: number = 1000;
+  private startTime: Date = new Date();
 
   saveResult(result: PingResult): void {
     this.results.push(result);
@@ -68,7 +69,9 @@ export class DataManager {
         averageLatency: 0,
         minLatency: 0,
         maxLatency: 0,
-        packetLoss: 0
+        packetLoss: 0,
+        startTime: this.startTime,
+        elapsedTime: this.formatElapsedTime(new Date())
       };
     }
 
@@ -82,7 +85,9 @@ export class DataManager {
       averageLatency: latencies.length > 0 ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0,
       minLatency: latencies.length > 0 ? Math.min(...latencies) : 0,
       maxLatency: latencies.length > 0 ? Math.max(...latencies) : 0,
-      packetLoss: data.length > 0 ? ((data.length - successfulResults.length) / data.length) * 100 : 0
+      packetLoss: data.length > 0 ? ((data.length - successfulResults.length) / data.length) * 100 : 0,
+      startTime: this.startTime,
+      elapsedTime: this.formatElapsedTime(new Date())
     };
   }
 
@@ -121,5 +126,22 @@ export class DataManager {
     }
     
     return cutoff;
+  }
+
+  private formatElapsedTime(currentTime: Date): string {
+    const elapsedMs = currentTime.getTime() - this.startTime.getTime();
+    const elapsedSeconds = Math.floor(elapsedMs / 1000);
+    
+    const hours = Math.floor(elapsedSeconds / 3600);
+    const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+    const seconds = elapsedSeconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${seconds}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${seconds}s`;
+    } else {
+      return `${seconds}s`;
+    }
   }
 }

@@ -187,6 +187,7 @@ export class SimpleGraphRenderer {
     const { default: colors } = COLOR_SCHEMES;
     
     let statsLine = 
+      `Runtime: ${colors.good}${stats.elapsedTime}${RESET_COLOR} | ` +
       `Total: ${stats.totalPings} | ` +
       `Success: ${colors.excellent}${(100 - stats.packetLoss).toFixed(1)}%${RESET_COLOR} | ` +
       `Loss: ${colors.failed}${stats.packetLoss.toFixed(1)}%${RESET_COLOR} | ` +

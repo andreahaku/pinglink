@@ -146,6 +146,7 @@ export class TerminalRenderer {
 
   public updateStats(stats: PingStats): void {
     const content = `{center}` +
+      `Runtime: {yellow-fg}${stats.elapsedTime}{/yellow-fg} | ` +
       `Total: ${stats.totalPings} | ` +
       `Success: ${stats.successfulPings} ({green-fg}${(100 - stats.packetLoss).toFixed(1)}%{/green-fg}) | ` +
       `Loss: ${stats.failedPings} ({red-fg}${stats.packetLoss.toFixed(1)}%{/red-fg}) | ` +

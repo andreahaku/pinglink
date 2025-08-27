@@ -88,6 +88,8 @@ export interface PingStats {
   minLatency: number;
   maxLatency: number;
   packetLoss: number;
+  startTime: Date;
+  elapsedTime: string;
 }
 
 export enum LatencyCategory {
