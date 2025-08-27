@@ -43,12 +43,12 @@ export class SimpleGraphRenderer {
     console.log(`Target: ${this.host} | Interval: ${this.interval}ms | Timeout: ${this.timeout}ms | Press Ctrl+C to quit`);
     console.log();
     console.log(
-      `${colors.excellent}0-50${RESET_COLOR} ` +
-      `${colors.good}50-100${RESET_COLOR} ` +
-      `${colors.fair}100-200${RESET_COLOR} ` +
-      `${colors.poor}200-500${RESET_COLOR} ` +
-      `${colors.verypoor}>500${RESET_COLOR} ` +
-      `${colors.failed}FAIL${RESET_COLOR} (ms)`
+      `${colors.excellent}· 0-50${RESET_COLOR} ` +
+      `${colors.good}∙ 50-100${RESET_COLOR} ` +
+      `${colors.fair}▪ 100-200${RESET_COLOR} ` +
+      `${colors.poor}■ 200-500${RESET_COLOR} ` +
+      `${colors.verypoor}■ >500${RESET_COLOR} ` +
+      `${colors.failed}□ FAIL${RESET_COLOR} (ms)`
     );
     console.log();
   }
