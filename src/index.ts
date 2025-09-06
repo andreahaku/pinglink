@@ -18,6 +18,10 @@ export async function startPingMonitor(config: PingConfig): Promise<void> {
       frequency: 800,
       duration: 200
     },
+    recoveryAlert: {
+      frequency: 1000,
+      duration: 100
+    },
     frequencyMapping: {
       excellent: 800,
       good: 600,
