@@ -4,26 +4,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-PingLink is a visual ping monitoring CLI tool built with TypeScript and Node.js. It provides real-time network monitoring with terminal-based visualization, audio alerts, and comprehensive statistics tracking.
+PingLink is a visual ping monitoring CLI tool built with TypeScript and Bun. It provides real-time network monitoring with terminal-based visualization, audio alerts, and comprehensive statistics tracking.
 
 ## Development Commands
 
 ### Core Development
-- `npm run dev` - Run in development mode (uses tsx)
-- `npm run build` - Build for production using esbuild
-- `npm run type-check` - Run TypeScript type checking
-- `npm run lint` - Run ESLint on src/**/*.ts
-- `npm run clean` - Remove dist/ directory
+- `bun run dev` - Run in development mode (native TypeScript)
+- `bun run dev:watch` - Run with watch mode for auto-reload
+- `bun run build` - Build for production using Bun's bundler
+- `bun run type-check` - Run TypeScript type checking
+- `bun run lint` - Run ESLint on src/**/*.ts
+- `bun run clean` - Remove dist/ directory
 
 ### Testing & Quality
-- Run `npm run type-check && npm run lint` after any code changes
+- Run `bun run type-check && bun run lint` after any code changes
 - No test framework is currently configured (test script exits with error)
 
 ### Quick Ping Commands
-- `npm run ping` - Ping 1.1.1.1 (default)
-- `npm run ping:google` - Ping 8.8.8.8
-- `npm run ping:demo` - Demo with 20 pings at 500ms interval
-- `npm run dev [host]` - Run with custom host in development
+- `bun run ping` - Ping 1.1.1.1 (default)
+- `bun run ping:google` - Ping 8.8.8.8
+- `bun run ping:demo` - Demo with 20 pings at 500ms interval
+- `bun run dev [host]` - Run with custom host in development
 
 ## Architecture
 
@@ -62,22 +63,23 @@ src/
 - Visual system uses size-based symbols that scale with latency (· ∙ ▪ ■ □)
 
 ### Build System
-- Uses esbuild for bundling with ES modules
-- TypeScript target: es2022, module: esnext
-- External dependencies: child_process, node:events, blessed, term.js, pty.js
+- Uses Bun's native bundler for fast builds
+- TypeScript target: ESNext, module: ESNext
+- External dependencies: blessed, term.js, pty.js
 - Binary output: dist/cli.js (main executable)
 
 ### Technology Stack
+- **Runtime**: Bun (with native TypeScript support)
 - **CLI**: Commander.js for argument parsing
 - **UI**: blessed for terminal interface, chalk for colors
 - **Audio**: Built-in sound system for alerts
-- **Build**: esbuild, TypeScript, tsx for development
+- **Build**: Bun's native bundler
 - **Ping**: Uses system ping command via child_process.spawn()
 
 ### Visual System Architecture
 The visualization uses a tiered symbol system:
 - Excellent (0-50ms): `·` (Middle Dot) - Green
-- Good (50-100ms): `∙` (Bullet Operator) - Yellow  
+- Good (50-100ms): `∙` (Bullet Operator) - Yellow
 - Fair (100-200ms): `▪` (Black Small Square) - Orange
 - Poor (200-500ms): `■` (Black Square) - Red
 - Very Poor (>500ms): `■` (Black Square) - Purple
@@ -86,8 +88,8 @@ The visualization uses a tiered symbol system:
 ## Development Notes
 
 ### Package Manager
-- Uses pnpm (specified in packageManager field)
-- pnpm-lock.yaml is present but gitignored
+- Uses Bun as both runtime and package manager
+- bun.lockb is the lock file
 
 ### Module System
 - Pure ES modules (type: "module" in package.json)

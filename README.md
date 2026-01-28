@@ -2,7 +2,7 @@
 
 A sophisticated command-line ping monitoring tool that provides real-time visual feedback of network connectivity with time-based graphical representation and comprehensive statistics.
 
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
+[![Bun](https://img.shields.io/badge/Bun-1.0%2B-f9f1e1.svg)](https://bun.sh/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-ISC-yellow.svg)](LICENSE)
 
@@ -27,29 +27,29 @@ git clone <repository-url>
 cd pinglink
 
 # Install dependencies
-npm install
+bun install
 
 # Start monitoring (defaults to 1.1.1.1 - Cloudflare DNS)
-npm run ping
+bun ping
 ```
 
 ### Basic Usage
 
 ```bash
 # Monitor default host (1.1.1.1)
-npm run ping
+bun ping
 
 # Monitor Google DNS
-npm run ping:google
+bun ping:google
 
 # Quick demo with fast pings
-npm run ping:demo
+bun ping:demo
 
 # Monitor a custom host
-npm run dev example.com
+bun dev example.com
 
 # Monitor with custom settings
-npm run dev 8.8.8.8 --interval 500 --count 20 --timeout 3000
+bun dev 8.8.8.8 --interval 500 --count 20 --timeout 3000
 ```
 
 ## 📖 Usage
@@ -85,19 +85,19 @@ Options:
 
 ```bash
 # Basic ping monitoring
-npm run ping
+bun ping
 
 # Monitor specific host with custom interval
-npm run dev google.com --interval 2000
+bun dev google.com --interval 2000
 
 # Quiet mode (show only failures)
-npm run ping:quiet
+bun ping:quiet
 
 # Limited ping count with fast interval
-npm run dev 192.168.1.1 --count 50 --interval 200
+bun dev 192.168.1.1 --count 50 --interval 200
 
 # Monitor with longer timeout for slow networks
-npm run dev remote-server.com --timeout 10000
+bun dev remote-server.com --timeout 10000
 ```
 
 ## 🎨 Visual Output
@@ -145,37 +145,37 @@ Total: 156 | Success: 87.2% | Loss: 12.8% | Avg: 45.7ms | Min: 18.2ms | Max: 234
 
 ### Development
 ```bash
-npm run dev              # Run in development mode (default host)
-npm run dev:watch        # Watch mode for development
-npm run build            # Build for production
-npm run type-check       # TypeScript type checking
-npm run lint             # Code linting
-npm run clean            # Clean build files
+bun dev              # Run in development mode (default host)
+bun dev:watch        # Watch mode for development
+bun run build        # Build for production
+bun run type-check   # TypeScript type checking
+bun run lint         # Code linting
+bun run clean        # Clean build files
 ```
 
 ### Quick Ping Commands
 ```bash
-npm run ping             # Ping default (1.1.1.1)
-npm run ping:google      # Ping Google DNS (8.8.8.8)
-npm run ping:cloudflare  # Ping Cloudflare DNS (1.1.1.1)
-npm run ping:demo        # Demo mode (10 pings, 500ms interval)
-npm run ping:quiet       # Quiet mode (failures only)
-npm run ping:detailed    # Detailed statistics view
+bun ping             # Ping default (1.1.1.1)
+bun ping:google      # Ping Google DNS (8.8.8.8)
+bun ping:cloudflare  # Ping Cloudflare DNS (1.1.1.1)
+bun ping:demo        # Demo mode (20 pings, 500ms interval)
+bun ping:quiet       # Quiet mode (failures only)
+bun ping:detailed    # Detailed statistics view
 ```
 
 ### Distribution
 ```bash
-npm start                # Build and run production binary
-npm run install-global   # Install globally as 'pinglink'
+bun start            # Run directly from source
+bun run build        # Build production bundle
+bun run install-global  # Install globally as 'pinglink'
 ```
 
 ## 🛠️ Development
 
 ### Prerequisites
 
-- Node.js 18+ 
+- [Bun](https://bun.sh/) 1.0+
 - TypeScript 5.0+
-- npm or yarn
 
 ### Setup
 
@@ -183,17 +183,17 @@ npm run install-global   # Install globally as 'pinglink'
 # Clone and install
 git clone <repository-url>
 cd pinglink
-npm install
+bun install
 
 # Development mode
-npm run dev
+bun dev
 
 # Build for production
-npm run build
+bun run build
 
 # Run tests and type checking
-npm run type-check
-npm run lint
+bun run type-check
+bun run lint
 ```
 
 ### Project Structure
@@ -253,7 +253,7 @@ pinglink/
 ## 🌐 Supported Platforms
 
 - ✅ **macOS** - Full support
-- ✅ **Linux** - Full support  
+- ✅ **Linux** - Full support
 - ✅ **Windows** - Full support
 - ✅ **Docker** - Works in containers
 
@@ -278,7 +278,7 @@ PingLink tracks comprehensive network statistics:
 
 ### Phase 3 - Audio System ✅ Complete
 - [x] Sound alerts for failures
-- [x] Recovery notification sounds  
+- [x] Recovery notification sounds
 - [x] Cross-platform audio support
 - [x] Configurable sound settings
 
@@ -313,7 +313,7 @@ This project is licensed under the ISC License - see the [LICENSE](LICENSE) file
 
 - Built with [Commander.js](https://github.com/tj/commander.js) for CLI parsing
 - Styled with [Chalk](https://github.com/chalk/chalk) for terminal colors
-- Powered by [TypeScript](https://www.typescriptlang.org/) and [Node.js](https://nodejs.org/)
+- Powered by [TypeScript](https://www.typescriptlang.org/) and [Bun](https://bun.sh/)
 
 ## 📞 Support
 
@@ -321,7 +321,7 @@ If you encounter any issues or have questions:
 
 1. Check the [Issues](https://github.com/username/pinglink/issues) page
 2. Create a new issue with detailed information
-3. Include your OS, Node.js version, and command used
+3. Include your OS, Bun version, and command used
 
 ---
 
