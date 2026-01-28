@@ -2,26 +2,27 @@
   "name": "pinglink",
   "version": "1.0.0",
   "main": "dist/index.js",
+  "module": "src/index.ts",
   "bin": {
     "pinglink": "./bin/pinglink"
   },
   "scripts": {
-    "build": "esbuild src/cli.ts --bundle --platform=node --format=esm --outfile=dist/cli.js --minify --external:blessed --external:term.js --external:pty.js --banner:js=\"import { createRequire } from 'module'; const require = createRequire(import.meta.url);\" && esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --minify --external:blessed --external:term.js --external:pty.js --banner:js=\"import { createRequire } from 'module'; const require = createRequire(import.meta.url);\"",
-    "dev": "tsx src/cli.ts",
-    "dev:watch": "esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js --watch",
-    "start": "npm run build && node ./bin/pinglink",
-    "ping": "tsx src/cli.ts",
-    "ping:google": "tsx src/cli.ts 8.8.8.8",
-    "ping:cloudflare": "tsx src/cli.ts 1.1.1.1",
-    "ping:demo": "tsx src/cli.ts 8.8.8.8 --count 20 --interval 500",
-    "ping:quiet": "tsx src/cli.ts --quiet",
-    "ping:detailed": "tsx src/cli.ts --detailed",
+    "build": "bun build src/cli.ts --outfile=dist/cli.js --target=bun --minify --external=blessed --external=term.js --external=pty.js && bun build src/index.ts --outfile=dist/index.js --target=bun --minify --external=blessed --external=term.js --external=pty.js",
+    "dev": "bun run src/cli.ts",
+    "dev:watch": "bun run --watch src/cli.ts",
+    "start": "bun run src/cli.ts",
+    "ping": "bun run src/cli.ts",
+    "ping:google": "bun run src/cli.ts 8.8.8.8",
+    "ping:cloudflare": "bun run src/cli.ts 1.1.1.1",
+    "ping:demo": "bun run src/cli.ts 8.8.8.8 --count 20 --interval 500",
+    "ping:quiet": "bun run src/cli.ts --quiet",
+    "ping:detailed": "bun run src/cli.ts --detailed",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src/**/*.ts",
-    "type-check": "tsc --noEmit",
+    "type-check": "bun run tsc --noEmit",
     "clean": "rm -rf dist/",
-    "prepare": "npm run build",
-    "install-global": "npm run build && npm link"
+    "prepare": "bun run build",
+    "install-global": "bun run build && bun link"
   },
   "keywords": [
     "ping",
@@ -35,13 +36,11 @@
   "description": "Visual Ping Monitor CLI Tool with real-time terminal interface",
   "type": "module",
   "devDependencies": {
+    "@types/bun": "latest",
     "@types/node": "^24.3.0",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
     "@typescript-eslint/parser": "^8.41.0",
-    "esbuild": "^0.25.9",
     "eslint": "^9.34.0",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.20.5",
     "typescript": "^5.9.2"
   },
   "dependencies": {
@@ -50,6 +49,5 @@
     "chalk": "^5.6.0",
     "cli-cursor": "^5.0.0",
     "commander": "^14.0.0"
-  },
-  "packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817a04bbe06a38d17e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748"
+  }
 }
