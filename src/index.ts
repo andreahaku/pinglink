@@ -1,7 +1,7 @@
 import { PingEngine } from './core/ping-engine.js';
 import { DataManager } from './core/data-manager.js';
 import { SoundEngine } from './core/sound-engine.js';
-import { SimpleGraphRenderer } from './ui/simple-graph-renderer.js';
+import { DashboardRenderer } from './ui/dashboard-renderer.js';
 import type { PingConfig, PingResult } from './types/index.js';
 import { formatLatencyWithColor, getStatusBlock, COLOR_SCHEMES } from './utils/color-schemes.js';
 import { formatTime } from './utils/time-utils.js';
@@ -34,10 +34,10 @@ export async function startPingMonitor(config: PingConfig): Promise<void> {
   const soundEngine = new SoundEngine(soundConfig);
   
   // Initialize UI based on config
-  let graphRenderer: SimpleGraphRenderer | null = null;
+  let graphRenderer: DashboardRenderer | null = null;
   
   if (config.visual && !config.simple) {
-    graphRenderer = new SimpleGraphRenderer(config.host, config.interval, config.timeout);
+    graphRenderer = new DashboardRenderer(config.host, config.interval, config.timeout);
   } else {
     console.log(`\n🔗 PingLink v1.0.0 - Starting ping monitor for ${config.host}`);
     console.log(`⚙️  Interval: ${config.interval}ms | Timeout: ${config.timeout}ms | View: ${config.view}`);
