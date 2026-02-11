@@ -7,7 +7,7 @@
     "pinglink": "./bin/pinglink"
   },
   "scripts": {
-    "build": "bun build src/cli.ts --outfile=dist/cli.js --target=bun --minify --external=blessed --external=term.js --external=pty.js --external=ink --external=react --external=@pppp606/ink-chart && bun build src/index.ts --outfile=dist/index.js --target=bun --minify --external=blessed --external=term.js --external=pty.js --external=ink --external=react --external=@pppp606/ink-chart",
+    "build": "bun build src/cli.ts --outfile=dist/cli.js --target=bun --minify --external=blessed --external=term.js --external=pty.js --external=ink --external=react && bun build src/index.ts --outfile=dist/index.js --target=bun --minify --external=blessed --external=term.js --external=pty.js --external=ink --external=react",
     "dev": "bun run src/cli.ts",
     "dev:watch": "bun run --watch src/cli.ts",
     "start": "bun run src/cli.ts",
@@ -45,7 +45,6 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@pppp606/ink-chart": "^0.2.4",
     "@types/blessed": "^0.1.25",
     "blessed": "^0.1.81",
     "chalk": "^5.6.0",

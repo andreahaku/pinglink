@@ -1,6 +1,5 @@
 import type React from 'react';
 import { Box, Text, useInput } from 'ink';
-import { BarChart } from '@pppp606/ink-chart';
 import type { PingStats } from '../types/index.js';
 
 export interface EventLogEntry {
@@ -121,6 +120,41 @@ function getLatencyColor(latency: number): string {
   return 'magenta';
 }
 
+function DistributionChart({
+  data,
+  width,
+}: {
+  data: Array<{ label: string; value: number; color: string }>;
+  width: number;
+}) {
+  const maxVal = Math.max(1, ...data.map((d) => d.value));
+  const maxLabelLen = Math.max(...data.map((d) => d.label.length));
+  const maxValLen = String(maxVal).length;
+  const barSpace = Math.max(5, width - maxLabelLen - maxValLen - 3);
+
+  return (
+    <Box flexDirection="column">
+      {data.map((item) => {
+        const barLen = Math.max(0, Math.round((item.value / maxVal) * barSpace));
+        return (
+          <Text key={item.label}>
+            <Text color={item.color}>
+              {item.label.padEnd(maxLabelLen)}
+            </Text>
+            <Text> </Text>
+            <Text color={item.color}>
+              {'\u2588'.repeat(barLen)}
+              {' '.repeat(barSpace - barLen)}
+            </Text>
+            <Text> </Text>
+            <Text>{String(item.value).padStart(maxValLen)}</Text>
+          </Text>
+        );
+      })}
+    </Box>
+  );
+}
+
 const BLOCK_CHARS = [' ', '\u2581', '\u2582', '\u2583', '\u2584', '\u2585', '\u2586', '\u2587', '\u2588'];
 
 function LatencyHistogram({
@@ -132,8 +166,10 @@ function LatencyHistogram({
   width: number;
   height: number;
 }) {
-  const visible = data.slice(-width);
-  const padLeft = Math.max(0, width - visible.length);
+  // Each bar is 1 char wide + 1 space gap = 2 chars per bar
+  const maxBars = Math.floor(width / 2);
+  const visible = data.slice(-maxBars);
+  const padLeft = Math.max(0, maxBars - visible.length) * 2;
 
   const positiveValues = visible.filter((v) => v > 0);
   const maxVal =
@@ -181,6 +217,8 @@ function LatencyHistogram({
       } else {
         pushChar(' ', 'white');
       }
+      // Gap between bars
+      pushChar(' ', 'white');
     }
 
     rows.push(
@@ -260,22 +298,18 @@ export function Dashboard(props: DashboardProps) {
             )}
           </Box>
 
-          {/* Bar chart */}
+          {/* Distribution chart */}
           <Box
+            flexShrink={0}
             borderStyle="single"
             borderColor="cyan"
             flexDirection="column"
           >
             <Text bold> Latency Distribution </Text>
-            {props.bucketData.some((d) => d.value > 0) ? (
-              <BarChart
-                data={props.bucketData}
-                showValue="right"
-                width={chartWidth}
-              />
-            ) : (
-              <Text color="gray"> Waiting for data...</Text>
-            )}
+            <DistributionChart
+              data={props.bucketData}
+              width={chartWidth}
+            />
           </Box>
         </Box>
 
