@@ -2,7 +2,8 @@ import { PingEngine } from './core/ping-engine.js';
 import { DataManager } from './core/data-manager.js';
 import { SoundEngine } from './core/sound-engine.js';
 import { SimpleGraphRenderer } from './ui/simple-graph-renderer.js';
-import type { PingConfig, PingResult } from './types/index.js';
+import { DashboardRenderer } from './ui/dashboard-renderer.js';
+import type { PingConfig, PingResult, Renderer } from './types/index.js';
 import { formatLatencyWithColor, getStatusBlock, COLOR_SCHEMES } from './utils/color-schemes.js';
 import { formatTime } from './utils/time-utils.js';
 
@@ -34,9 +35,13 @@ export async function startPingMonitor(config: PingConfig): Promise<void> {
   const soundEngine = new SoundEngine(soundConfig);
   
   // Initialize UI based on config
-  let graphRenderer: SimpleGraphRenderer | null = null;
-  
+  let graphRenderer: Renderer | null = null;
+  let dashboard: DashboardRenderer | null = null;
+
   if (config.visual && !config.simple) {
+    dashboard = new DashboardRenderer(config.host, config.interval, config.timeout);
+    graphRenderer = dashboard;
+  } else if (config.simple) {
     graphRenderer = new SimpleGraphRenderer(config.host, config.interval, config.timeout);
   } else {
     console.log(`\n🔗 PingLink v1.0.0 - Starting ping monitor for ${config.host}`);
@@ -44,10 +49,10 @@ export async function startPingMonitor(config: PingConfig): Promise<void> {
     console.log(`🔊 Sound alerts: ${config.sound ? 'ON' : 'OFF'}`);
     console.log('───────────────────────────────────────────────────────────────');
   }
-  
+
   let pingCount = 0;
   const maxPings = config.count || 0;
-  
+
   // Handle graceful shutdown
   const shutdown = () => {
     if (graphRenderer) {
@@ -69,6 +74,11 @@ export async function startPingMonitor(config: PingConfig): Promise<void> {
     pingEngine.stopPing();
     process.exit(0);
   };
+
+  // Wire dashboard quit handler now that shutdown is defined
+  if (dashboard) {
+    dashboard.setOnQuit(shutdown);
+  }
 
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);

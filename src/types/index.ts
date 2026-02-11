@@ -109,3 +109,9 @@ export interface ColorScheme {
   verypoor: string;
   failed: string;
 }
+
+export interface Renderer {
+  addPingResult(result: PingResult): void;
+  updateStats(stats: PingStats): void;
+  destroy(): void;
+}
