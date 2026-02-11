@@ -1,5 +1,6 @@
+import type React from 'react';
 import { Box, Text, useInput } from 'ink';
-import { LineGraph, BarChart } from '@pppp606/ink-chart';
+import { BarChart } from '@pppp606/ink-chart';
 import type { PingStats } from '../types/index.js';
 
 export interface EventLogEntry {
@@ -13,7 +14,6 @@ export interface EventLogEntry {
 export interface DashboardProps {
   host: string;
   latencyHistory: number[];
-  avgHistory: number[];
   bucketData: Array<{ label: string; value: number; color: string }>;
   stats: PingStats | null;
   eventLog: EventLogEntry[];
@@ -121,6 +121,83 @@ function getLatencyColor(latency: number): string {
   return 'magenta';
 }
 
+const BLOCK_CHARS = [' ', '\u2581', '\u2582', '\u2583', '\u2584', '\u2585', '\u2586', '\u2587', '\u2588'];
+
+function LatencyHistogram({
+  data,
+  width,
+  height,
+}: {
+  data: number[];
+  width: number;
+  height: number;
+}) {
+  const visible = data.slice(-width);
+  const padLeft = Math.max(0, width - visible.length);
+
+  const positiveValues = visible.filter((v) => v > 0);
+  const maxVal =
+    positiveValues.length > 0
+      ? Math.ceil(Math.max(...positiveValues) * 1.1)
+      : 100;
+
+  const maxLabel = `${maxVal}`;
+  const yAxisW = maxLabel.length + 1;
+
+  const rows: React.ReactElement[] = [];
+
+  for (let r = 0; r < height; r++) {
+    const rowTop = (maxVal * (height - r)) / height;
+    const rowBottom = (maxVal * (height - r - 1)) / height;
+    const isBottom = r === height - 1;
+
+    // Y-axis label
+    let yLabel: string;
+    if (r === 0) yLabel = maxLabel.padStart(yAxisW - 1) + '\u2502';
+    else if (isBottom) yLabel = '0'.padStart(yAxisW - 1) + '\u2502';
+    else yLabel = ' '.repeat(yAxisW - 1) + '\u2502';
+
+    // Build colored segments, grouping consecutive same-color chars
+    const segments: Array<{ text: string; color: string }> = [];
+    const pushChar = (ch: string, color: string) => {
+      if (segments.length > 0 && segments[segments.length - 1].color === color) {
+        segments[segments.length - 1].text += ch;
+      } else {
+        segments.push({ text: ch, color });
+      }
+    };
+
+    for (let p = 0; p < padLeft; p++) pushChar(' ', 'white');
+
+    for (const value of visible) {
+      if (value <= 0) {
+        pushChar(isBottom ? '\u00d7' : ' ', 'red');
+      } else if (value >= rowTop) {
+        pushChar('\u2588', getLatencyColor(value));
+      } else if (value > rowBottom) {
+        const fraction = (value - rowBottom) / (rowTop - rowBottom);
+        const idx = Math.min(8, Math.ceil(fraction * 8));
+        pushChar(BLOCK_CHARS[idx], getLatencyColor(value));
+      } else {
+        pushChar(' ', 'white');
+      }
+    }
+
+    rows.push(
+      <Text key={r}>
+        <Text dimColor>{yLabel}</Text>
+        {segments.map((seg, i) => (
+          <Text key={i} color={seg.color}>
+            {seg.text}
+          </Text>
+        ))}
+      </Text>,
+    );
+  }
+
+  return <Box flexDirection="column">{rows}</Box>;
+}
+
 export function Dashboard(props: DashboardProps) {
   const isTTY = process.stdin.isTTY === true;
 
@@ -147,14 +224,6 @@ export function Dashboard(props: DashboardProps) {
   const logMaxEntries = Math.max(3, rows - lineChartHeight - 14);
   const gaugeWidth = Math.max(10, rightColWidth - 14);
 
-  const lineData = [];
-  if (props.latencyHistory.length > 0) {
-    lineData.push({ values: props.latencyHistory, color: 'green' });
-    if (props.avgHistory.length > 0) {
-      lineData.push({ values: props.avgHistory, color: 'yellow' });
-    }
-  }
-
   return (
     <Box flexDirection="column" width={cols} height={rows}>
       {/* Header */}
@@ -172,7 +241,7 @@ export function Dashboard(props: DashboardProps) {
       <Box flexGrow={1} flexDirection="row">
         {/* Left column: charts */}
         <Box flexDirection="column" width={leftColWidth}>
-          {/* Line chart */}
+          {/* Latency histogram */}
           <Box
             flexGrow={1}
             borderStyle="single"
@@ -180,12 +249,11 @@ export function Dashboard(props: DashboardProps) {
             flexDirection="column"
           >
             <Text bold> Latency (ms) </Text>
-            {lineData.length > 0 ? (
-              <LineGraph
-                data={lineData}
+            {props.latencyHistory.length > 0 ? (
+              <LatencyHistogram
+                data={props.latencyHistory}
                 width={chartWidth}
                 height={lineChartHeight}
-                showYAxis
               />
             ) : (
               <Text color="gray"> Waiting for data...</Text>

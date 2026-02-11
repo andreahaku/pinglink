@@ -42,22 +42,9 @@ export class DashboardRenderer implements Renderer {
   }
 
   private buildProps(): DashboardProps {
-    // Compute average line from successful latencies
-    const avgHistory: number[] = [];
-    if (this.latencyHistory.length > 1) {
-      const successLatencies = this.latencyHistory.filter((l) => l > 0);
-      if (successLatencies.length > 0) {
-        const avg =
-          successLatencies.reduce((a, b) => a + b, 0) /
-          successLatencies.length;
-        avgHistory.push(...this.latencyHistory.map(() => avg));
-      }
-    }
-
     return {
       host: this.host,
       latencyHistory: [...this.latencyHistory],
-      avgHistory,
       bucketData: LATENCY_BUCKETS.map((b, i) => ({
         label: b.label,
         value: this.bucketCounts[i],
